@@ -15,6 +15,8 @@ Aprendizaje continuo y escalonado:
 ## Contenido
 
 - HTTP
+- REST
+- APIs
 
 ### Notas Generales
 
@@ -68,3 +70,19 @@ Siglas pertenecientes el título Apllication Programming Interface, utilizada pa
 - SEGURIDAD: Proteger las APIs privadas para evitar usurpación de información.
 - TESTEAR: Para evitar problemas u errores mientras está en ejecución.
 - DOCUMENTACION: Para poder compartir con los demás y sepan como funciona.
+
+Ejemplo de servidor sencillo con PYTHON
+
+```python
+from wsgiref.simple_server import make_server
+
+def application(env, start_response):
+  headers = [ ("Content-Type", "text/plain") ]
+
+  start_response("200 OK", headers)
+
+  return [b"Hola mundo, desde mi primer servidor en Python!"]
+
+server = make_server("localhost", 8000, application)
+server.serve_forever()
+```
