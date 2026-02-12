@@ -65,13 +65,15 @@ Siglas pertenecientes el título Apllication Programming Interface, utilizada pa
   - Locales
   - Remotas: Se componen de servicios web
 
-#### Buenas Practicas
+##### Buenas Practicas
 - HATEOAS: La API se autodescribe; cada recurso tiene información de cual es el recurso siguiente o de la cantidad de recursos totales que hay.
 - SEGURIDAD: Proteger las APIs privadas para evitar usurpación de información.
 - TESTEAR: Para evitar problemas u errores mientras está en ejecución.
 - DOCUMENTACION: Para poder compartir con los demás y sepan como funciona.
 
-Ejemplo de servidor sencillo con PYTHON
+#### 06/02/2026
+
+##### Ejemplo de servidor sencillo con PYTHON
 
 ```python
 from wsgiref.simple_server import make_server
@@ -82,6 +84,89 @@ def application(env, start_response):
   start_response("200 OK", headers)
 
   return [b"Hola mundo, desde mi primer servidor en Python!"]
+
+server = make_server("localhost", 8000, application)
+server.serve_forever()
+```
+
+#### 08/02/2026
+
+##### Ejemplo de servidor con retorno de HTML
+
+```python
+from wsgiref.simple_server import make_server
+
+HTML = """
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Servidor en Python</title>
+    <body>
+      <h1>Hola mundo, desde mi primer servidor en Python!</h1>
+    </body>
+  </head>
+</html>
+"""
+
+def application(env, start_response):
+  headers = [ ("Content-Type", "text/html") ]
+
+  start_response("200 OK", headers)
+
+  return [bytes(HTML, "utf-8")]
+
+server = make_server("localhost", 8000, application)
+server.serve_forever()
+```
+
+#### 10/02/2026
+
+##### Creación de plantillas
+
+Las plantillas nos permite implementar variables, ciclos, condiciones, entre otros. Así podemos generar páginas web dinámicas. En este caso se utiliza de la libreria "jinja2".
+
+Mediante la utilización de dos juegos de llaves colocamos el nombre de la variable la cual será reemplazada, al renderizar el template, por el valor de la variable que nosotros indiquemos.
+
+##### Ejemplo de template
+
+```HTML
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>{{ title }}</title>
+    <body>
+      <h1>Hola {{ name }}</h1>
+    </body>
+  </head>
+</html>
+```
+
+#### 11/02/2026
+
+##### Obtener el template y renderizar
+
+Se requiere de importar dos clases, Enviroment y FileSystemLoader.
+
+```Python
+from wsgiref.simple_server import make_server
+from jinja2 import Environment, FileSystemLoader
+
+def application(env, start_response):
+  headers = [ ("Content-Type", "text/html") ]
+
+  start_response("200 OK", headers)
+  
+  env = Environment(loader=FileSystemLoader("templates"))
+
+  template = env.get_template("index.html")
+
+  html =template.render(
+    {
+      "title": "Servidor en Python",
+      "name": "Fernando"
+      })
+  
+  return [bytes(html, "utf-8")]
 
 server = make_server("localhost", 8000, application)
 server.serve_forever()
