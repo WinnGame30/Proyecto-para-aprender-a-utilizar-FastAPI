@@ -171,3 +171,19 @@ def application(env, start_response):
 server = make_server("localhost", 8000, application)
 server.serve_forever()
 ```
+
+#### 23/02/2026
+
+##### Primer cliente en PYTHON
+
+Para poder realizar una petición utilizando PYTHON sobre el protocolo HTTP podemos utilziar el modulo URLLIB. Y a su vez, para realizar una solicitud a URLIB podemos utilizar el modulo REQUEST.
+
+```Python
+from urllib import request
+
+URL = "http://localhost:8000/"
+
+response = request.urlopen(URL)
+
+print(response.read())
+```
