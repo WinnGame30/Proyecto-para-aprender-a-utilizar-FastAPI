@@ -187,3 +187,77 @@ response = request.urlopen(URL)
 
 print(response.read())
 ```
+
+#### 02/03/2026
+
+##### Type Hints
+
+Nos permiten definir el tipo de dato que va a contener nuestra variable y así mejorar nuestro código y permitir una lectura y desarollo más rápidos. Enfocadas para auxiliar a los programados para seguir estandares de codificación.
+
+En variables:
+```Python
+a: str = "Esto es una cadena"
+b: int = 15
+c: float = 19.5
+d: bool = True
+```
+
+En funciones:
+```Python
+def suma(numero1: int, numero2: int) -> int
+    return numero1 + numero2
+```
+
+En el anterior ejemplo tenemos una suma sencilla, pero le estámos diciendo a Python que la variable 1 y la variable 2, así como el resultado del método suma, van a contener un dato de tipo int.
+
+En clases:
+```Python
+class User():
+  def __init__(self, username: str, password: str) -> None:
+    self.username = username
+    self.password = password
+
+  def saluda(self) -> str:
+    return f"Hola {username}"
+
+ejemplo = User("WinnGame", "1234")
+print(ejemplo.saluda())
+```
+
+En colecciones:
+
+```Python
+from typing import List
+calificaciones: List[int] = [10, 5, 9, 7, 9, 10, 10, 5]
+
+def promedio(calificaciones: List[int]) -> float:
+  return sum(calificaciones)/ len(calificaciones)
+
+print(promedio(calificaciones))
+```
+
+En temas de colecciones podemos ser específicos indicando el tipo de dato que va a contener nuestra lista, tupla o diccionario. Pero es necesario importar List de Typing, aplica de la misma forma para Tuple[] y para Dict[].
+
+#### Libreria Pydantic
+
+Es una libreria que FASTAPI utiliza, ya que ayuda a validar los datos de entrada y de salida, y las validaciones se implementan utilizando anotaciones. Es necesario utilizar la clase BaseModel para validar que los valores que almacenen los atributos sean los correctos con respecto a los type hints.
+
+```Python
+from pydantic import BaseModel
+
+class User(BaseModel):
+  id: str
+  password: str
+  email: str
+  age: int
+
+informacion = {
+  "id": "123456789",
+  "password": "123456789",
+  "email": "winn@example.com",
+  "age": 25
+}
+
+user = User(**informacion)
+print(user)
+```
