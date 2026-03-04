@@ -238,7 +238,7 @@ print(promedio(calificaciones))
 
 En temas de colecciones podemos ser específicos indicando el tipo de dato que va a contener nuestra lista, tupla o diccionario. Pero es necesario importar List de Typing, aplica de la misma forma para Tuple[] y para Dict[].
 
-#### Libreria Pydantic
+##### Libreria Pydantic
 
 Es una libreria que FASTAPI utiliza, ya que ayuda a validar los datos de entrada y de salida, y las validaciones se implementan utilizando anotaciones. Es necesario utilizar la clase BaseModel para validar que los valores que almacenen los atributos sean los correctos con respecto a los type hints.
 
@@ -260,4 +260,106 @@ informacion = {
 
 user = User(**informacion)
 print(user)
+```
+
+#### 03/03/2026
+
+##### Validator
+
+Podemos crear nuestras propias validaciones utilizando del decorador VALIDATOR para nuestros modelos.
+
+Ejemplo para validar un solo dato:
+
+```Python
+from pydantic import BaseModel
+from pydantic import FieldValidator
+from pydantic import ValidationError
+
+class User(BaseModel):
+  username: str
+  password: str
+  email: str
+  age: int
+
+  @field_validator("username")
+  def username_validation_lenght(cls, usernamer):
+    if (len(usernamer) < 3):
+      raise ValueError("La longitud mínima es de 4 caracteres")
+    if (len(usernamer) > 50):
+      raise ValueError("La longitud máxima es de 50 caracteres")
+    return usernamer
+  
+try:
+  informacion = {
+  "username": "Wi",
+  "password": "123456789",
+  "email": "winn@example.com",
+  "age": 25
+  }
+
+  user = User(**informacion)
+  print(user)
+
+except ValidationError as e:
+  print(e.json())
+```
+
+Ejemplo para validar uno o más datos:
+
+```Python
+from pydantic import BaseModel
+from pydantic import ValidationError
+from pydantic import model_validator
+
+class User(BaseModel):
+  username: str
+  password: str
+  repeat_password: str
+  email: str
+  age: int
+
+  @model_validator(mode="after")
+  def repeat_password_validation(self):
+    if self.password != self.repeat_password:
+      raise ValueError("Las contraseñas no coinciden")
+    return self
+  
+try:
+  user = User(username="Wi", password="12345678910", repeat_password="123456789",
+              email="winn@example.com", age=25)
+  print(user)
+
+except ValidationError as e:
+  print(e)
+```
+
+#### FastApi
+
+Para utilizar la libreria FastApi es necesario instalar y, posteriormente, importar la clase:
+
+```Py
+from fastapi import FastAPI
+```
+
+Es necesario crear nuestra aplicación y podemos definirla con title, description y version.
+
+```Py
+app = FastAPI(title= "Proyecto FastAPI",
+              description= "Proyecto de ejemplo con FastAPI",
+              version= "1.0.0")
+```
+
+Podemos crear diferentes rutas, o urls, para definir las acciones que quermeos que nuestra aplicación tenga dependiendo del método http y lo que desee el usuario.
+
+```Py
+# Get para indicar las peticiones
+@app.get("/")
+def read_root():
+    return {"message": "Hola, bienvenido a mi proyecto FastAPI!"}
+```
+
+Y podemos indicar en nuestra url que trabaje de manera asincrona por si recibe múltiples peticiones al mismo tiempo.
+
+```Py
+async def read_root():
 ```
