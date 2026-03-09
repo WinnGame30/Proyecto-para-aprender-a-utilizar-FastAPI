@@ -333,7 +333,7 @@ except ValidationError as e:
   print(e)
 ```
 
-#### FastApi
+##### FastApi
 
 Para utilizar la libreria FastApi es necesario instalar y, posteriormente, importar la clase:
 
@@ -362,4 +362,81 @@ Y podemos indicar en nuestra url que trabaje de manera asincrona por si recibe m
 
 ```Py
 async def read_root():
+```
+
+#### 08/03/2026
+
+##### Eventos
+
+Podemos realizar eventos antes que el servidor inicie y eventos después de que el servidor se esté apagando, con startup y shutdown respectivamente. Actualmente se hace uso de la función lifespan de la siguiente forma:
+
+```Python
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    print("Iniciando la aplicación...")
+    yield
+    print("Cerrando la aplicación...")
+```
+
+Donde asynccontextmanager es un decorador de Python que convierte una función con yield en un context manager asíncrono. Lo obtenemos al importar de la libreria contextlib. Ejemplo con main:
+
+```Python
+from fastapi import FastAPI
+from contextlib import asynccontextmanager
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    print("Iniciando la aplicación...")
+    yield
+    print("Cerrando la aplicación...")
+
+app = FastAPI(title= "Proyecto FastAPI",
+              description= "Proyecto de ejemplo con FastAPI",
+              version= "1.0.0",
+              lifespan=lifespan)
+```
+
+##### Conexión a Base de Datos
+
+Para hacer posible que nuestro programa se conecte con una base de datos debemos hacer uso de un ORM llamado PEEWEE, también llamado Object-Relational Mapper, es ligero para Python y permite trabajar con bases de datos usando objetos y clases de Python en lugar de escribir SQL directamente.
+Conectamos y después creamos una nueva Base de Datos
+
+```SQL
+mysql -u root -p
+
+CREATE DATABASE fastapi_project
+```
+
+Para conocer la aplicación con el gestor de base de datos:
+
+```Python
+from peewee import *
+
+database = MySQLDatabase("fastapi_project", user="root", password="contraseña",
+                         host="localhost", port=3306)
+```
+
+Ejemplo de conexión de servidor con base de datos:
+
+```Python
+from fastapi import FastAPI
+from contextlib import asynccontextmanager
+from database import database as connection
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    if connection.is_closed():
+        connection.connect()
+        print("Iniciando el servidor...")
+    
+    yield
+    
+    if not connection.is_closed():
+        connection.close()
+        print("Cerrando el servidor...")
+    
+app = FastAPI(title= "Proyecto FastAPI",
+              description= "Proyecto de ejemplo con FastAPI",
+              version= "1.0.0",
+              lifespan=lifespan)
 ```
