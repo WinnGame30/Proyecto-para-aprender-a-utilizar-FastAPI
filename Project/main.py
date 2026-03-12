@@ -1,18 +1,20 @@
 from fastapi import FastAPI
 from contextlib import asynccontextmanager
 from database import database as connection
+from database import User, Videojuego, UserReview
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     if connection.is_closed():
         connection.connect()
-        print("Iniciando el servidor...")
-    
+        
+    connection.create_tables([User, Videojuego, UserReview])
+
     yield
     
     if not connection.is_closed():
         connection.close()
-        print("Cerrando el servidor...")
+        
     
 app = FastAPI(title= "Proyecto FastAPI",
               description= "Proyecto de ejemplo con FastAPI",

@@ -440,3 +440,7 @@ app = FastAPI(title= "Proyecto FastAPI",
               version= "1.0.0",
               lifespan=lifespan)
 ```
+
+#### 11/03/2026
+
+Este día se realizó un ejemplo de creación de tablas en bases de datos, se utilizaron modelos para defiinir las tablas y atributos para definir las columnas.
