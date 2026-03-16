@@ -443,4 +443,16 @@ app = FastAPI(title= "Proyecto FastAPI",
 
 #### 11/03/2026
 
-Este día se realizó un ejemplo de creación de tablas en bases de datos, se utilizaron modelos para defiinir las tablas y atributos para definir las columnas.
+Este día se realizó un ejemplo de creación de tablas en bases de datos, se utilizaron modelos para definir las tablas y atributos para definir las columnas.
+
+#### 15/03/2026
+
+Este día de realizó un ejemplo de modelos dentro de nuestro ejercicio para la creación de campos en las tablas, se definin parámetros específicos para cada Usuario, Videojuego y Reseña. Se aprende a utilizar un archivo schemas para validar los datos de entrada y salida de la API.
+
+Se realizó la codificación para la creación de nuevos usuarios.
+```PYTHON
+@app.post("/users/")
+async def create_user(user: UserBaseModel):
+    user = User.create(username=user.username, password=user.password)
+    return {"id": user.id, "username": user.username}
+```
