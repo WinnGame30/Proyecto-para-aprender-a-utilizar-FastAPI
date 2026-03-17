@@ -456,3 +456,65 @@ async def create_user(user: UserBaseModel):
     user = User.create(username=user.username, password=user.password)
     return {"id": user.id, "username": user.username}
 ```
+
+#### 16/03/2026
+
+Utilizar FIELD VALIDATOR para validar la longitud de un nombre de usuario.
+
+```Python
+@field_validator("username", mode="before")
+def validate_username(cls, value):
+  if len(value) < 3:
+    raise ValueError("El nombre de usuario debe tener al menos 3 caracteres")
+  elif len(value) > 50:
+    raise ValueError("El nombre de usuario no puede tener más de 50 caracteres")
+  return value
+```
+
+Aprender a encriptar contraseñas. Este ejemplo de realizó con HASH MD5.
+
+```PYTHON
+@classmethod
+    def creat_password(cls, password: str):
+        h = hashlib.md5()
+        password = h.update(password.encode("utf-8"))
+        return h.hexdigest()
+```
+
+```PYTHON
+@app.post("/users")
+async def create_user(user: UserBaseModel):
+    hash_password = User.creat_password(user.password)
+
+    user = User.create(username = user.username,
+                       password = hash_password)
+    return {user.id}
+```
+
+Actualizar ante una posible excepción por usuario duplicado
+
+```Python
+@app.post("/users")
+async def create_user(user: UserBaseModel):
+
+    if User.select().where(User.username == user.username).exists():
+        return HTTPException(status_code=409, detail="El username ya existe")
+
+    hash_password = User.creat_password(user.password)
+
+    user = User.create(username = user.username,
+                       password = hash_password)
+    return {user.id}
+```
+
+Utilizar un modelo para la respuesta del servidor
+
+```PYTHON
+class UserResponseModel(BaseModel):
+    id: int
+    username: str
+```
+
+```PYTHON
+return UserResponseModel(id = user.id, username = user.username)
+```

@@ -1,8 +1,12 @@
+import hashlib
 from peewee import *
 from datetime import datetime
 
-database = MySQLDatabase("fastapi_project", user="root", password="FBMM1477",
-                         host="localhost", port=3306)
+database = MySQLDatabase("fastapi_project",
+                        user="root",
+                        password="FBMM1477",
+                        host="localhost",
+                        port=3306)
 
 class User(Model):
     username = CharField(max_length=50, unique=True)
@@ -15,6 +19,12 @@ class User(Model):
     class Meta:
         database = database
         table_name = "users"
+
+    @classmethod
+    def create_password(cls, password: str):
+        h = hashlib.md5()
+        password = h.update(password.encode("utf-8"))
+        return h.hexdigest()
 
 class Videojuego(Model):
     title = CharField(max_length=100)

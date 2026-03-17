@@ -1,11 +1,13 @@
 from fastapi import FastAPI
+from fastapi import HTTPException
 
 from contextlib import asynccontextmanager
 
 from database import database as connection
 from database import User, Videojuego, UserReview
 
-from schemas import UserBaseModel
+from schemas import UserRequestModel
+from schemas import UserResponseModel
 
 @asynccontextmanager
 async def lifespan(_: FastAPI):
@@ -32,7 +34,15 @@ async def read_root():
 async def read_about():
     return {"message": "Este es un proyecto de ejemplo usando FastAPI"}
 
-@app.post("/users/")
-async def create_user(user: UserBaseModel):
-    user = User.create(username = user.username, password = user.password)
-    return {user.id}
+@app.post("/users", response_model=UserResponseModel)
+async def create_user(user: UserRequestModel):
+
+    if User.select().where(User.username == user.username).exists():
+        raise HTTPException(status_code=409, detail="El username ya existe")
+
+    hash_password = User.create_password(user.password)
+
+    user = User.create(username = user.username,
+                       password = hash_password)
+    
+    return UserResponseModel(id = user.id, username = user.username)
