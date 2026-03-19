@@ -6,8 +6,8 @@ from contextlib import asynccontextmanager
 from database import database as connection
 from database import User, Videojuego, UserReview
 
-from schemas import UserRequestModel
-from schemas import UserResponseModel
+from schemas import UserRequestModel, ReseñaRequestModel
+from schemas import UserResponseModel, ReseñaResponseModel
 
 @asynccontextmanager
 async def lifespan(_: FastAPI):
@@ -45,4 +45,14 @@ async def create_user(user: UserRequestModel):
     user = User.create(username = user.username,
                        password = hash_password)
     
-    return UserResponseModel(id = user.id, username = user.username)
+    return user
+
+@app.post("/reseñas_videojuegos", response_model=ReseñaResponseModel)
+async def create_review(reseña: ReseñaRequestModel):
+
+    reseña = UserReview.create(user_id = reseña.id_usuario,
+                               videojuego_id = reseña.id_videojuego,
+                               review = reseña.review,
+                               score = reseña.score)
+    
+    return reseña

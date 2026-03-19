@@ -518,3 +518,7 @@ class UserResponseModel(BaseModel):
 ```PYTHON
 return UserResponseModel(id = user.id, username = user.username)
 ```
+
+#### 18/03/2026
+
+Se aprendieron a utilizar RESPONSE MODELS.
