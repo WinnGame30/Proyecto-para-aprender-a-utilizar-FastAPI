@@ -1,5 +1,4 @@
 from pydantic import BaseModel, field_validator
-from pydantic import BaseModel
 from pydantic.utils import GetterDict
 
 from peewee import ModelSelect
@@ -44,10 +43,14 @@ class ReseñaRequestModel(BaseModel):
     review: str
     score: int
 
+    @field_validator("score", mode="before")
+    def validacion_score(cls, score):
+        if score < 0 or score > 10:
+            raise ValueError("La puntuación debe estar entre 0 y 10")
+        return score
+
 class ReseñaResponseModel(ResponseModel):
     id: int
     videojuego_id: int
     review: str
     score: int
-
-

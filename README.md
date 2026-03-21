@@ -522,3 +522,28 @@ return UserResponseModel(id = user.id, username = user.username)
 #### 18/03/2026
 
 Se aprendieron a utilizar RESPONSE MODELS.
+
+#### 20/03/2026
+
+Validar puntaje entre 0 y 10
+
+```Python
+    @field_validator("score", mode="before")
+    def validacion_score(cls, score):
+        if score < 0 or score > 10:
+            raise ValueError("La puntuación debe estar entre 0 y 10")
+        return score
+```
+
+Obtener reseñas específicas
+
+```Python
+@app.get("/listado_reseñas/{id}", response_model=ReseñaResponseModel)
+async def reseña_particular(id: int):
+    reseña = UserReview.select().where(UserReview.id == id).first()
+
+    if reseña is None:
+        raise HTTPException(status_code=404, detail="La reseña no existe")
+    
+    return reseña
+```
