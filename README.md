@@ -538,12 +538,46 @@ Validar puntaje entre 0 y 10
 Obtener reseñas específicas
 
 ```Python
-@app.get("/listado_reseñas/{id}", response_model=ReseñaResponseModel)
-async def reseña_particular(id: int):
-    reseña = UserReview.select().where(UserReview.id == id).first()
+@app.get("/listado_reviews/{id}", response_model=ReviewResponseModel)
+async def review_particular(id: int):
+    review = UserReview.select().where(UserReview.id == id).first()
 
-    if reseña is None:
+    if review is None:
         raise HTTPException(status_code=404, detail="La reseña no existe")
     
-    return reseña
+    return review
+```
+
+#### 21/03/2026
+
+Modificar reseñas
+
+```Python
+@app.put("/modificar_review/{id}", response_model=ReviewResponseModel)
+async def modificar_review(id: int, modificacion: ReviewModificarModel):
+    review = UserReview.select().where(UserReview.id == id).first()
+
+    if review is None:
+        raise HTTPException(status_code=404, detail="La reseña no existe")
+    
+    review.review = modificacion.review
+    review.score = modificacion.score
+
+    review.save()
+
+    return review
+```
+
+Eliminar reseñas
+
+```Python
+@app.delete("/eliminar_review/{id}", response_model = ReviewResponseModel)
+async def eliminar_review(id: int):
+    review = UserReview.select().where(UserReview.id == id).first()
+
+    if review is None:
+        raise HTTPException(status_code=404, detail="La reseña no existe")
+    
+    review.delete_instance()
+    return review
 ```

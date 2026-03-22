@@ -6,8 +6,8 @@ from contextlib import asynccontextmanager
 from database import database as connection
 from database import User, Videojuego, UserReview
 
-from schemas import UserRequestModel, ReseñaRequestModel
-from schemas import UserResponseModel, ReseñaResponseModel
+from schemas import UserRequestModel, ReviewRequestModel
+from schemas import UserResponseModel, ReviewResponseModel, ReviewModificarModel
 
 from typing import List
 
@@ -25,7 +25,7 @@ async def lifespan(_: FastAPI):
 
 app = FastAPI(title= "Proyecto FastAPI",
               description= "Proyecto de ejemplo con FastAPI",
-              version= "1.0.0",
+              version= "1.0.1",
               lifespan=lifespan)
 
 @app.get("/")
@@ -49,32 +49,56 @@ async def create_user(user: UserRequestModel):
     
     return user
 
-@app.post("/reseñas_videojuegos", response_model=ReseñaResponseModel)
-async def create_review(reseña: ReseñaRequestModel):
+@app.post("/reviews", response_model=ReviewResponseModel)
+async def create_review(new_review: ReviewRequestModel):
 
-    if User.select().where(User.id == reseña.id_usuario).first() is None:
+    if User.select().where(User.id == new_review.id_usuario).first() is None:
         raise HTTPException(status_code=404, detail="El usuario no existe")
     
-    if Videojuego.select().where(Videojuego.id == reseña.id_videojuego).first() is None:
+    if Videojuego.select().where(Videojuego.id == new_review.id_videojuego).first() is None:
         raise HTTPException(status_code=404, detail="El videojuego no existe")
 
-    reseña = UserReview.create(user_id = reseña.id_usuario,
-                               videojuego_id = reseña.id_videojuego,
-                               review = reseña.review,
-                               score = reseña.score)
+    review = UserReview.create(user_id = new_review.id_usuario,
+                               videojuego = new_review.id_videojuego,
+                               review = new_review.review,
+                               score = new_review.score)
     
-    return reseña
+    return review
 
-@app.get("/listado_reseñas", response_model=List[ReseñaResponseModel])
-async def listado_reseñas():
-    reseñas = UserReview.select()
-    return reseñas
+@app.get("/reviews", response_model=List[ReviewResponseModel])
+async def listado_reviews(page: int = 1, limit : int = 10):
+    reviews = UserReview.select().paginate(page, limit)
+    return reviews
 
-@app.get("/listado_reseñas/{id}", response_model=ReseñaResponseModel)
-async def reseña_particular(id: int):
-    reseña = UserReview.select().where(UserReview.id == id).first()
+@app.get("/reviews/{id}", response_model=ReviewResponseModel)
+async def review_particular(id: int):
+    review = UserReview.select().where(UserReview.id == id).first()
 
-    if reseña is None:
+    if review is None:
         raise HTTPException(status_code=404, detail="La reseña no existe")
     
-    return reseña
+    return review
+
+@app.put("/reviews/{id}", response_model=ReviewResponseModel)
+async def modificar_review(id: int, modificacion: ReviewModificarModel):
+    review = UserReview.select().where(UserReview.id == id).first()
+
+    if review is None:
+        raise HTTPException(status_code=404, detail="La reseña no existe")
+    
+    review.review = modificacion.review
+    review.score = modificacion.score
+
+    review.save()
+
+    return review
+
+@app.delete("/reviews/{id}", response_model = ReviewResponseModel)
+async def eliminar_review(id: int):
+    review = UserReview.select().where(UserReview.id == id).first()
+
+    if review is None:
+        raise HTTPException(status_code=404, detail="La reseña no existe")
+    
+    review.delete_instance()
+    return review

@@ -17,6 +17,13 @@ class ResponseModel(BaseModel):
         orm_mode = True
         getter_dict = PeeweeGetterDict
 
+class ReviewValidator():
+    @field_validator("score", mode="before")
+    def validacion_score(cls, score: int):
+        if not (0 <= score <= 10):
+            raise ValueError("La puntuación debe estar entre 0 y 10")
+        return score
+
 # ------------ Usuario ------------ #
     
 class UserRequestModel(BaseModel):
@@ -35,22 +42,27 @@ class UserResponseModel(ResponseModel):
     id: int
     username: str
 
+# ------------ Videojuego ------------ #
+
+class VideojuegoResponseModel(ResponseModel):
+    id: int
+    title: str
+
 # ------------ Reseña ------------ #
 
-class ReseñaRequestModel(BaseModel):
-    id_usuario: int
-    id_videojuego: int
-    review: str
-    score: int
-
-    @field_validator("score", mode="before")
-    def validacion_score(cls, score):
-        if score < 0 or score > 10:
-            raise ValueError("La puntuación debe estar entre 0 y 10")
-        return score
-
-class ReseñaResponseModel(ResponseModel):
-    id: int
+class ReviewRequestModel(BaseModel, ReviewValidator):
+    user_id: int
     videojuego_id: int
     review: str
     score: int
+    
+class ReviewResponseModel(ResponseModel):
+    id: int
+    videojuego: VideojuegoResponseModel
+    review: str
+    score: int
+
+class ReviewModificarModel(BaseModel, ReviewValidator):
+    review: str
+    score: int
+
