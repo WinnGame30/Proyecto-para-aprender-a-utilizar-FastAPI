@@ -39,7 +39,7 @@ class Videojuego(Model):
     
 class UserReview(Model):
     user = ForeignKeyField(User, backref="reviews")
-    videojuego = ForeignKeyField(Videojuego, backref="reviews")
+    videojuego = ForeignKeyField(Videojuego)
     review = TextField()
     score = IntegerField()
     created_at = DateTimeField(default=datetime.now)

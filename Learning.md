@@ -17,6 +17,9 @@ Aprendizaje continuo y escalonado:
 - HTTP
 - REST
 - APIs
+- CONEXION A BASES DE DATOS CON PEEWEE
+- SCHEMAS
+- PYDANTIC
 
 ### Notas Generales
 
@@ -581,3 +584,7 @@ async def eliminar_review(id: int):
     review.delete_instance()
     return review
 ```
+
+#### 22/03/2026
+
+Se modularizo y se crearon routers dentro del proyecto
