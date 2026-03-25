@@ -11,14 +11,14 @@ router = APIRouter(prefix="/reviews")
 @router.post("/", response_model=ReviewResponseModel)
 async def create_review(new_review: ReviewRequestModel):
 
-    if User.select().where(User.id == new_review.id_usuario).first() is None:
+    if User.select().where(User.id == new_review.user_id).first() is None:
         raise HTTPException(status_code=404, detail="El usuario no existe")
     
-    if Videojuego.select().where(Videojuego.id == new_review.id_videojuego).first() is None:
+    if Videojuego.select().where(Videojuego.id == new_review.videojuego_id).first() is None:
         raise HTTPException(status_code=404, detail="El videojuego no existe")
 
-    review = UserReview.create(user_id = new_review.id_usuario,
-                               videojuego = new_review.id_videojuego,
+    review = UserReview.create(user_id = new_review.user_id,
+                               videojuego = new_review.videojuego_id,
                                review = new_review.review,
                                score = new_review.score)
     

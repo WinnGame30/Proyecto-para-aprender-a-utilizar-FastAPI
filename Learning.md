@@ -588,3 +588,47 @@ async def eliminar_review(id: int):
 #### 22/03/2026
 
 Se modularizo y se crearon routers dentro del proyecto
+
+#### 24/03/2026
+
+Familiarizacion con la libreria request
+
+```python
+import requests
+
+url = "http://127.0.0.1:8000/api/v1/reviews"
+
+response = requests.get(url)
+
+if response.status_code == 200:
+    print("Petición realizada con éxito")
+
+    print (response.content)
+```
+
+GET
+
+```python
+import requests
+
+url = "http://127.0.0.1:8000/api/v1/reviews"
+encabezados = { "accept": "application/json" }
+queryset = { "page": 1, "limit": 2 }
+
+response = requests.get(url, headers = encabezados, params = queryset)
+
+if response.status_code == 200:
+    print("Petición realizada con éxito")
+
+    if response.headers.get("Content-Type") == "application/json":
+        
+        reviews = response.json()
+        for review in reviews:
+            print(f'score: {review["score"]} - review: {review["review"]}')
+```
+
+POST
+
+```python
+
+```
