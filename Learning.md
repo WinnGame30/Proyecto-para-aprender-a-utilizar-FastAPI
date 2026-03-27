@@ -630,5 +630,134 @@ if response.status_code == 200:
 POST
 
 ```python
+import requests
 
+url = "http://127.0.0.1:8000/api/v1/reviews"
+review = { 
+    "user_id": 1,
+    "videojuego_id" : 1,
+    "review": "Excelente juego, lo recomiendo mucho",
+    "score": 10
+}
+
+response = requests.post(url, json = review)
+
+if response.status_code == 200:
+    print("Reseña creada exitosamente")
+
+else:
+    print(response.content)
+```
+
+#### 26/03/2026
+
+PUT
+
+```PYTHON
+import requests
+
+id = 1
+url = f"http://127.0.0.1:8000/api/v1/reviews/{id}"
+
+headers = {
+    "accept": "application/json",
+    }
+
+review = {
+    "review": "Nueva review, actualizada",
+    "score": 9
+    }
+
+response = requests.put(url, headers=headers, json=review)
+
+if response.status_code == 200:
+    print("Review modificada exitosamente:")
+    print(response.json())
+else:
+    print(response.content)
+```
+
+DELETE
+
+```python
+import requests
+
+id = 3
+url = f"http://127.0.0.1:8000/api/v1/reviews/{id}"
+
+headers = {
+    "accept": "application/json",
+    }
+
+response = requests.delete(url, headers=headers)
+
+if response.status_code == 200:
+    print("Review eliminada correctamente")
+    print(response.json())
+else:
+    print(response.content)
+```
+
+COOKIES
+
+```PYTHON
+import requests
+
+url = f"http://127.0.0.1:8000/api/v1/users/"
+
+credentials = {
+  "username": "User3",
+  "password": "User3"
+}
+
+response = requests.post(url + "login", json=credentials)
+
+if response.status_code == 200:
+    print("Login exitoso")
+
+    user_id = response.cookies.get_dict().get("user_id")
+
+    response = requests.get(url + "reviews/", cookies={"user_id": user_id})
+    if response.status_code == 200:
+        for review in response.json():
+            print(f"review: {review['review']}, score: {review['score']}")
+
+else:
+    print("Error en el login")
+    print("Código de estado:", response.status_code)
+    print("Respuesta:", response.json())
+```
+
+##### OAuth2
+
+Es un estándar abierto para la autorización de aplicaciones web. Asegurando recursos para la API. Hay cuatro entidades importantes:
+
+- Recurso Protegido: Todo recurso que no queramos exponer a todos los clientes, solo a los clientes autenticados.
+
+- Client: Quien realiza las peticiones, de navegadores web, smartphones, etcétera
+
+- Resource Owner: Propietario del recurso, en el ejemplo de las reseñas, las reseñas son propiedad de los usuarios.
+
+- Authorization Server: El servidor autoriza la autenticación.
+
+Es necesario seguir ciertos pasos:
+1. Usuario debe ingresar con sus credenciales.
+2. El servidor verifica que las credencias sean correctas y retornan un WEB TOKEN.
+3. El token es guardado por el cliente.
+4. Las nuevas peticiones realizadas por el cliente debe enviar el token obtenido.
+5. El servidor valida el toke y retorna el recurso protegido.
+
+El ACCESS TOKEN es una cadena alfanumérica.
+
+Es necesario utilizar no solo cookies porqué no todos los clientes soportan el uso de cookies. Entre más clientes puedan utilizar nuestra API mucho mejor. Y, a su vez, generan un mayor performance.
+
+Implementacion OAuth2
+
+```PYTHON
+@api_v1.post("/auth")
+async def auth(data: OAuth2PasswordRequestForm = Depends()):
+    return {
+        "username" : data.username,
+        "password" : data.password
+        }
 ```
